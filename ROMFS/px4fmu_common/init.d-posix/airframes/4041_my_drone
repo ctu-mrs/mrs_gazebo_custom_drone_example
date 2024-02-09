@@ -2,11 +2,11 @@
 #
 # @name My Drone
 #
-# @type Tricopter Y+
+# @type Quadrotor H
 #
 # @maintainer Petr Stibinger <petr.stibinger@fel.cvut.cz>
 #
 
 . ${R}etc/init.d/rc.mc_defaults
 
-set MIXER tricopter_y_plus
+set MIXER quadrotor_h

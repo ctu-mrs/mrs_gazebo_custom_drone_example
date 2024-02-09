@@ -15,7 +15,7 @@ windows:
   - gazebo:
       layout: tiled
       panes:
-        - waitForRos; roslaunch mrs_uav_gazebo_simulation simulation.launch 
+        - waitForRos; roslaunch mrs_uav_gazebo_simulation simulation.launch
           world_name:=grass_plane
           spawner_config:=./config/spawner_config.yaml
           gui:=true
@@ -27,7 +27,7 @@ windows:
   - spawn:
       layout: tiled
       panes:
-        - waitForGazebo; rosservice call /mrs_drone_spawner/spawn "1 --$UAV_TYPE --enable-ground-truth"
+        - waitForGazebo; rosservice call /mrs_drone_spawner/spawn "1 --$UAV_TYPE --enable-ground-truth --enable-rangefinder --enable-custom-monochrome-camera"
   - hw_api:
       layout: tiled
       panes:
