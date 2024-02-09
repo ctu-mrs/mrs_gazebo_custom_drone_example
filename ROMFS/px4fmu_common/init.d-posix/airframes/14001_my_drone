@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# @name My Drone
+#
+# @type Tricopter Y+
+#
+# @maintainer Petr Stibinger <petr.stibinger@fel.cvut.cz>
+#
+
+. ${R}etc/init.d/rc.mc_defaults
+
+set MIXER tricopter_y_plus

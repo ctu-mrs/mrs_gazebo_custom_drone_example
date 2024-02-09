@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sdf version='1.6'>
+
+{# gazebo_mavlink_interface_tricopter_macro {--> #}
+{%- macro gazebo_mavlink_interface_tricopter_macro(imu_topic, mag_topic, baro_topic, lidar_topic, mavlink_config) -%}
+<plugin name="mavlink_interface_plugin" filename="libgazebo_mavlink_interface.so">
+  <robotNamespace/>
+  <imuSubTopic>{{ imu_topic }}</imuSubTopic>
+  <magSubTopic>{{ mag_topic }}</magSubTopic>
+  <baroSubTopic>{{ baro_topic }}</baroSubTopic>
+  <lidarSubTopic>{{ lidar_topic }}</lidarSubTopic>
+  <mavlink_addr>INADDR_ANY</mavlink_addr>
+  <mavlink_udp_port>{{ mavlink_config['mavlink_udp_port'] }}</mavlink_udp_port>
+  <mavlink_tcp_port>{{ mavlink_config['mavlink_tcp_port'] }}</mavlink_tcp_port>
+  <serialEnabled>0</serialEnabled>
+  <serialDevice>/dev/ttyACM0</serialDevice>
+  <baudRate>921600</baudRate>
+  <qgc_addr>INADDR_ANY</qgc_addr>
+  <qgc_udp_port>{{ mavlink_config['qgc_udp_port'] }}</qgc_udp_port>
+  <sdk_addr>INADDR_ANY</sdk_addr>
+  <sdk_udp_port>{{ mavlink_config['sdk_udp_port'] }}</sdk_udp_port>
+  <hil_mode>0</hil_mode>
+  <hil_state_level>0</hil_state_level>
+  <send_vision_estimation>{{ mavlink_config['send_vision_estimation'] }}</send_vision_estimation>
+  <send_odometry>{{ mavlink_config['send_odometry'] }}</send_odometry>
+  <enable_lockstep>{{ mavlink_config['enable_lockstep'] }}</enable_lockstep>
+  <use_tcp>{{ mavlink_config['use_tcp'] }}</use_tcp>
+  <motorSpeedCommandPubTopic>/gazebo/command/motor_speed</motorSpeedCommandPubTopic>
+  <control_channels>
+    <channel name="rotor1">
+      <input_index>0</input_index>
+      <input_offset>0.0</input_offset>
+      <input_scaling>0.85</input_scaling>
+      <zero_position_disarmed>0</zero_position_disarmed>
+      <zero_position_armed>0.15</zero_position_armed>
+      <joint_control_type>velocity</joint_control_type>
+    </channel>
+    <channel name="rotor2">
+      <input_index>1</input_index>
+      <input_offset>0.0</input_offset>
+      <input_scaling>0.85</input_scaling>
+      <zero_position_disarmed>0</zero_position_disarmed>
+      <zero_position_armed>0.15</zero_position_armed>
+      <joint_control_type>velocity</joint_control_type>
+    </channel>
+    <channel name="rotor3">
+      <input_index>2</input_index>
+      <input_offset>0.0</input_offset>
+      <input_scaling>0.85</input_scaling>
+      <zero_position_disarmed>0</zero_position_disarmed>
+      <zero_position_armed>0.15</zero_position_armed>
+      <joint_control_type>velocity</joint_control_type>
+    </channel>
+    <channel name="yaw_servo">
+      <input_index>3</input_index>
+      <input_offset>0.85</input_offset>
+      <input_scaling>0.3</input_scaling>
+      <zero_position_disarmed>0</zero_position_disarmed>
+      <zero_position_armed>0</zero_position_armed>
+      <joint_control_type>position</joint_control_type>
+      <joint_name>yaw_servo_joint</joint_name>
+      <joint_control_pid>
+        <p>10</p>
+        <i>0</i>
+        <d>0</d>
+        <iMax>0.0</iMax>
+        <iMin>0.0</iMin>
+        <cmdMax>2</cmdMax>
+        <cmdMin>-2</cmdMin>
+        <errMax>0.2</errMax>
+      </joint_control_pid>
+    </channel>
+  </control_channels>
+</plugin>
+{%- endmacro -%}
+{# <!--}--> #}
+
+</sdf>

@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sdf version='1.6'>
+
+  {# import templates from the MRS UAV System #}
+  {%- import 'mrs_robots_description/sdf/component_snippets.sdf.jinja' as mrs_components -%}
+  {%- import 'mrs_robots_description/sdf/generic_components.sdf.jinja' as mrs_generic -%}
+
+  {# import additional components from this package, path is relative to package root #}
+  {%- import 'models/my_drone/sdf/custom_components.sdf.jinja' as custom_components -%}
+
+  {# Robot params {--> #}
+  {%- set mass = 1.2 -%} {# [kg] #}
+  {%- set mass_prop = 0.01 -%} {# [kg] #}
+  {%- set motor_mass = 0.08 -%} {# [kg] #}
+  {%- set motor_radius = 0.015 -%} {# [m] #}
+  {%- set motor_height = 0.012 -%} {# [m] #}
+  {%- set radius_prop = 0.089408 -%} {# [m] #}
+  {%- set body_radius = 0.166 -%} {# [m] #}
+  {%- set body_height = 0.03 -%} {# [m] #}
+  {%- set prop_z_offset = 0.04 -%} {# [m] #}
+  {%- set root = 'base_link' -%}
+  {# <!--}--> #}
+
+  {# Motor constants {--> #}
+  {%- set rotor_velocity_slowdown_sim = 0.0159236 -%}
+  {%- set motor_constant = 8.91 -%} {# [kg.m/s^2] #}
+  {%- set moment_constant = 0.016 -%} {# [m] #}
+  {%- set time_constant_up = 1.0 / 80.0 -%} {# [s] #}
+  {%- set time_constant_down = 1.0 / 40.0 -%} {# [s] #}
+  {%- set max_rot_velocity = 1 -%} {# [rad/s] #}
+  {%- set rotor_drag_coefficient = 0.001 -%} {# orig 8.06428e-04 #}
+  {%- set rolling_moment_coefficient = '1.0e-6' -%}
+  {# <!--}--> #}
+
+  {# Meshes {--> #}
+  {%- set arm_mesh_file = 'model://my_drone/meshes/arm.dae' -%} {# from this package #}
+  {%- set prop_mesh_file = 'model://my_drone/meshes/prop_ccw.dae' -%} {# from this package #}
+  {%- set pixhawk_mesh_file = 'model://mrs_robots_description/meshes/sensors/pixhawk.dae' -%} {# from mrs_uav_gazebo_simulation #}
+  {%- set mesh_scale = '1 1 1' -%}
+  {# <!--}--> #}
+
+  {# Inertias {--> #}
+  {%- set inertia_body_radius = 0.2 -%} {# [m] #}
+  {%- set inertia_body_height = 0.075 -%} {# [m] #}
+
+  {%- set body_ixx = mass * (3 * inertia_body_radius * inertia_body_radius + inertia_body_height * inertia_body_height) / 12 -%}
+  {%- set body_ixy = 0 -%}
+  {%- set body_ixz = 0 -%}
+  {%- set body_iyy = mass * (3 * inertia_body_radius * inertia_body_radius + inertia_body_height * inertia_body_height) / 12 -%}
+  {%- set body_iyz = 0 -%}
+  {%- set body_izz = (mass * inertia_body_radius * inertia_body_radius) / 2 -%}
+
+  {%- set motor_ixx = motor_mass * (3 * motor_radius * motor_radius + motor_height * motor_height) / 12 -%}
+  {%- set motor_ixy = 0 -%}
+  {%- set motor_ixz = 0 -%}
+  {%- set motor_iyy = motor_mass * (3 * motor_radius * motor_radius + motor_height * motor_height) / 12 -%}
+  {%- set motor_iyz = 0 -%}
+  {%- set motor_izz = (motor_mass * motor_radius * motor_radius) / 2 -%}
+
+  {%- set prop_ixx = 0.0001 -%}
+  {%- set prop_ixy = 0 -%}
+  {%- set prop_ixz = 0 -%}
+  {%- set prop_iyy = 0.0001 -%}
+  {%- set prop_iyz = 0 -%}
+  {%- set prop_izz = 0.0001 -%}
+  {# <!--}--> #}
+
+  <model name="{{ spawner_args['name'] }}">
+
+    <link name="{{ root }}">
+
+      <!-- Body physics {-->
+      {{ mrs_generic.multirotor_physics_macro(
+        mass = mass,
+        body_radius = 0.3 * body_radius,
+        body_height = 5.0 * body_height,
+        rotor_velocity_slowdown_sim = rotor_velocity_slowdown_sim,
+        ixx = body_ixx,
+        ixy = body_ixy,
+        ixz = body_ixz,
+        iyy = body_iyy,
+        iyz = body_iyz,
+        izz = body_izz)
+      }}
+      <!--}-->
+
+      <!-- Body visuals {-->
+
+      <!-- Arms {-->
+      {{ mrs_generic.visual_mesh_macro(
+        name = 'front_right_arm',
+        mesh_file = arm_mesh_file,
+        mesh_scale = mesh_scale,
+        color = 'Red',
+        x = 0,
+        y = 0,
+        z = body_height/2,
+        roll = 0,
+        pitch = 0,
+        yaw = math.radians(-60))
+      }}
+
+      {{ mrs_generic.visual_mesh_macro(
+        name = 'front_left_arm',
+        mesh_file = arm_mesh_file,
+        mesh_scale = mesh_scale,
+        color = 'Green',
+        x = 0,
+        y = 0,
+        z = body_height/2,
+        roll = 0,
+        pitch = 0,
+        yaw = math.radians(60))
+      }}
+
+      {{ mrs_generic.visual_mesh_macro(
+        name = 'back_right',
+        mesh_file = arm_mesh_file,
+        mesh_scale = mesh_scale,
+        color = 'Blue',
+        x = 0,
+        y = 0,
+        z = body_height/2,
+        roll = 0,
+        pitch = 0,
+        yaw = math.radians(180))
+      }}
+      <!--}-->
+
+      <!-- Pixhawk {-->
+      {{ mrs_generic.visual_mesh_macro(
+        name = 'pixhawk',
+        mesh_file = pixhawk_mesh_file,
+        mesh_scale = mesh_scale,
+        color = 'DarkGrey',
+        x = 0,
+        y = 0,
+        z = body_height,
+        roll = 0,
+        pitch = 0,
+        yaw = 0)
+      }}
+      <!--}-->
+
+      <!-- Legs {-->
+      <!--}-->
+
+      <!-- Motors {-->
+      {{ mrs_generic.visual_mesh_macro(
+        name = 'front_motor',
+        mesh_file = none,
+        mesh_scale = mesh_scale,
+        color = 'Grey',
+        x = body_radius * math.cos(math.radians(-60)),
+        y = body_radius * math.sin(math.radians(-60)),
+        z = 0,
+        roll = 0,
+        pitch = 0,
+        yaw = 0)
+      }}
+
+      {{ mrs_generic.visual_mesh_macro(
+        name = 'back_left_motor',
+        mesh_file = none,
+        mesh_scale = mesh_scale,
+        color = 'Grey',
+        x = body_radius * math.cos(math.radians(60)),
+        y = body_radius * math.sin(math.radians(60)),
+        z = 0,
+        roll = 0,
+        pitch = 0,
+        yaw = 0)
+      }}
+
+      {{ mrs_generic.visual_mesh_macro(
+        name = 'back_right_motor',
+        mesh_file = none,
+        mesh_scale = mesh_scale,
+        color = 'Grey',
+        x = body_radius * math.cos(math.radians(180)),
+        y = body_radius * math.sin(math.radians(180)),
+        z = 0,
+        roll = 0,
+        pitch = 0,
+        yaw = 0)
+      }}
+      <!--}-->
+
+      <!--}-->
+
+    </link>
+
+    {# Front propellers (fixed) {--> #}
+    {%- set prop_list = [
+    {
+    'motor_number': 0,
+    'direction': 'ccw',
+    'x': body_radius * math.cos(math.radians(-60)),
+    'y': body_radius * math.sin(math.radians(-60)),
+    'z': prop_z_offset,
+    'mesh_files': [prop_mesh_file],
+    'mesh_scale': mesh_scale,
+    'color': 'DarkGrey'
+    },
+    {
+    'motor_number': 1,
+    'direction': 'ccw',
+    'x': body_radius * math.cos(math.radians(60)),
+    'y': body_radius * math.sin(math.radians(60)),
+    'z': prop_z_offset,
+    'mesh_files': [prop_mesh_file],
+    'mesh_scale': mesh_scale,
+    'color': 'DarkGrey'
+    }
+    ]
+    -%}
+    {{ mrs_components.propellers_macro(
+      prop_list = prop_list,
+      rotor_velocity_slowdown_sim = rotor_velocity_slowdown_sim,
+      motor_constant = motor_constant,
+      moment_constant = moment_constant,
+      parent = root,
+      mass = mass_prop,
+      radius = radius_prop,
+      time_constant_up = time_constant_up,
+      time_constant_down = time_constant_down,
+      max_rot_velocity = max_rot_velocity,
+      rotor_drag_coefficient = rotor_drag_coefficient,
+      rolling_moment_coefficient = rolling_moment_coefficient,
+      meshes_z_offset = 0,
+      prop_ixx = prop_ixx,
+      prop_ixy = prop_ixy,
+      prop_ixz = prop_ixz,
+      prop_iyy = prop_iyy,
+      prop_iyz = prop_iyz,
+      prop_izz = prop_izz,
+      spawner_args = spawner_args)
+    }}
+    {# <!--}--> #}
+
+    {# Rear propeller (actuated) {--> #}
+
+    {# yaw servo {--> #}
+    <link name="yaw_servo_link">
+      <pose>{{ -body_radius }} 0 {{ prop_z_offset }} 0 0 0</pose>
+      <inertial>
+        <mass>{{ mass_prop }}</mass>
+        <inertia>
+          <ixx>{{ prop_ixx }}</ixx>
+          <ixy>{{ prop_ixy }}</ixy>
+          <ixz>{{ prop_ixz }}</ixz>
+          <iyy>{{ prop_iyy }}</iyy>
+          <iyz>{{ prop_iyz }}</iyz>
+          <izz>{{ prop_izz }}</izz>
+        </inertia>
+      </inertial>
+      <visual name="yaw_servo_visual">
+        <geometry>
+          <cylinder>
+            <length>{{ motor_height }}</length>
+            <radius>{{ motor_radius }}</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name="yaw_servo_joint" type="revolute">
+      <parent>{{ root }}</parent>
+      <child>yaw_servo_link</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.4</lower>
+          <upper>0.4</upper>
+        </limit>
+        <dynamics>
+          <friction>0.3</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    {# <!--}--> #}
+
+    {# propeller {--> #}
+    <link name="prop_2_link">
+      <pose>{{ -body_radius }} 0 {{ prop_z_offset }} 0 0 0</pose>
+      <inertial>
+        <mass>{{ mass_prop }}</mass>
+        <inertia>
+          <ixx>{{ prop_ixx }}</ixx>
+          <ixy>{{ prop_ixy }}</ixy>
+          <ixz>{{ prop_ixz }}</ixz>
+          <iyy>{{ prop_iyy }}</iyy>
+          <iyz>{{ prop_iyz }}</iyz>
+          <izz>{{ prop_izz }}</izz>
+        </inertia>
+      </inertial>
+      {{ mrs_generic.visual_mesh_macro('prop_2', prop_mesh_file, mesh_scale, 'Red', 0, 0, 0, 0, 0, 0) }}
+      {{ mrs_generic.collision_cylinder_macro(
+        name = 'prop_2_link',
+        collision_length = 2 * radius_prop,
+        collision_radius = 0.01,
+        x = 0,
+        y = 0,
+        z = 0,
+        roll = 0,
+        pitch = math.radians(90),
+        yaw = 0)
+      }}
+    </link>
+    {{ mrs_generic.motor_plugins_macro(
+      motor_number = 2,
+      direction = 'ccw',
+      time_constant_up = time_constant_up,
+      time_constant_down = time_constant_down,
+      max_rot_velocity = max_rot_velocity,
+      motor_constant = motor_constant,
+      moment_constant = moment_constant,
+      rotor_drag_coefficient = rotor_drag_coefficient,
+      rolling_moment_coefficient = rolling_moment_coefficient,
+      rotor_velocity_slowdown_sim = rotor_velocity_slowdown_sim,
+      enable_motor_crash = false,
+      motor_plugin_filename = 'libgazebo_motor_model.so')
+    }}
+    <joint name="prop_2_joint" type="revolute">
+      <!-- <parent>{{ root }}</parent> -->
+      <parent>yaw_servo_link</parent>
+      <child>prop_2_link</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>0</use_parent_model_frame>
+      </axis>
+    </joint>
+    {# <!--}--> #}
+
+    {# <!--}--> #}
+
+    <!-- Pixhawk {-->
+    {%- set imu_topic = '/imu' -%}
+    {%- set mag_topic = '/mag' -%}
+    {%- set baro_topic = '/baro' -%}
+    {%- set lidar_topic = '/lidar' -%}
+
+    <!-- Gazebo ground truth {-->
+    {{ mrs_generic.gazebo_groundtruth_macro(
+      home_latitude = 0,
+      home_longitude = 0,
+      home_altitude = 0)
+    }}
+    <!--}-->
+
+    <!-- GPS {-->
+    {{ mrs_generic.gazebo_gps_macro(
+      gps_name = 'gps0',
+      parent_link = root,
+      update_rate = 10,
+      gps_noise = true,
+      gps_xy_random_walk = 2.0,
+      gps_z_random_walk = 4.0,
+      gps_xy_noise_density = '2.0e-4',
+      gps_z_noise_density = '4.0e-4',
+      gps_vxy_noise_density = 0.2,
+      gps_vz_noise_density = 0.4,
+      x = 0,
+      y = 0,
+      z = 0,
+      roll = 0,
+      pitch = 0,
+      yaw = 0)
+    }}
+    <!--}-->
+
+    <!-- Magnetometer {-->
+    {{ mrs_generic.gazebo_magnetometer_macro(
+      pub_rate = 100,
+      noise_density = 0.0004,
+      random_walk = 0.0000064,
+      bias_correlation_time = 600,
+      mag_topic = mag_topic)
+    }}
+    <!--}-->
+
+    <!-- Barometer {-->
+    {{ mrs_generic.gazebo_barometer_macro(
+      baro_topic = baro_topic,
+      pub_rate = 50,
+      baro_drift_pa_per_sec = 0)
+    }}
+    <!--}-->
+
+    <!-- Mavlink interface (customized) {-->
+    {{ custom_components.gazebo_mavlink_interface_tricopter_macro(
+      imu_topic = imu_topic,
+      mag_topic = mag_topic,
+      baro_topic = baro_topic,
+      lidar_topic = lidar_topic,
+      mavlink_config = spawner_args['mavlink_config'])
+    }}
+    <!--}-->
+
+    <!-- IMU {-->
+    <!-- NOTE: IMU has to be last, otherwise the simulation is extremely slow! -->
+    {{ mrs_generic.gazebo_imu_macro(
+      imu_name = 'imu',
+      parent_link = root,
+      imu_topic = '/imu',
+      gyroscope_noise_density = 0.00018665,
+      gyroscope_random_walk = 0.000038785,
+      gyroscope_bias_correlation_time = 1000.0,
+      gyroscope_turn_on_bias_sigma = 0.0087,
+      accelerometer_noise_density = 0.00186,
+      accelerometer_random_walk = 0.006,
+      accelerometer_bias_correlation_time = 300.0,
+      accelerometer_turn_on_bias_sigma = 0.1960,
+      x = 0,
+      y = 0,
+      z = 0,
+      roll = 0,
+      pitch = 0,
+      yaw = 0)
+    }}
+    <!--}-->
+
+    <!--}-->
+
+  </model>
+</sdf>
+
