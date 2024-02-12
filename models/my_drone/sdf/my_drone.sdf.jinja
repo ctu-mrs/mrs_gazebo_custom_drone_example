@@ -13,7 +13,7 @@
 
   {%- set prop_mass = 0.01 -%} {# [kg] #}
   {%- set prop_radius  = 0.09 -%} {# [m] #}
-  {%- set prop_offset_z = -0.006 -%} {# [m] #}
+  {%- set prop_offset_z = -0.004 -%} {# [m] #}
 
   {%- set center_board_radius = 0.05 -%} {# [m] #}
   {%- set center_board_height= 0.002 -%} {# [m] #}
@@ -52,7 +52,8 @@
   {%- set prop_mesh_file = 'model://my_drone/meshes/propeller.dae' -%} {# from this package #}
   {%- set pixhawk_mesh_file = 'model://mrs_robots_description/meshes/sensors/pixhawk.dae' -%} {# from mrs_uav_gazebo_simulation #}
   {%- set mesh_scale = '1 1 1' -%}
-  {%- set prop_mesh_scale = '0.8 0.8 1' -%}
+  {%- set prop_mesh_scale_ccw = '0.8 0.8 1' -%}
+  {%- set prop_mesh_scale_cw = '-0.8 0.8 1' -%}
   {# <!--}--> #}
 
   {# Inertias {--> #}
@@ -306,7 +307,7 @@
     'y': (center_board_radius + arm_length) * math.sin(math.radians(-37)),
     'z': body_height + arm_offset_z + motor_height + motor_offset_z + prop_offset_z,
     'mesh_files': [prop_mesh_file],
-    'mesh_scale': prop_mesh_scale,
+    'mesh_scale': prop_mesh_scale_cw,
     'color': 'Gold'
     },
     {
@@ -316,7 +317,7 @@
     'y': (center_board_radius + arm_length) * math.sin(math.radians(143)),
     'z': body_height + arm_offset_z + motor_height + motor_offset_z + prop_offset_z,
     'mesh_files': [prop_mesh_file],
-    'mesh_scale': prop_mesh_scale,
+    'mesh_scale': prop_mesh_scale_cw,
     'color': 'Gold'
     },
     {
@@ -326,7 +327,7 @@
     'y': (center_board_radius + arm_length) * math.sin(math.radians(37)),
     'z': body_height + arm_offset_z + motor_height + motor_offset_z + prop_offset_z,
     'mesh_files': [prop_mesh_file],
-    'mesh_scale': prop_mesh_scale,
+    'mesh_scale': prop_mesh_scale_ccw,
     'color': 'Gold'
     },
     {
@@ -336,7 +337,7 @@
     'y': (center_board_radius + arm_length) * math.sin(math.radians(217)),
     'z': body_height + arm_offset_z + motor_height + motor_offset_z + prop_offset_z,
     'mesh_files': [prop_mesh_file],
-    'mesh_scale': prop_mesh_scale,
+    'mesh_scale': prop_mesh_scale_ccw,
     'color': 'Gold'
     }
     ]
@@ -526,9 +527,11 @@
     </joint>
     {%- endset -%}
     {# <!--}--> #}
-    
+
     {%- if garmin_rangefinder | length > 0 or monochrome_camera | length > 0 -%}
+      <!-- optional sensor mount {-->
       {{ optional_sensor_mount }}
+      <!--}-->
     {%- endif -%}
 
   </model>

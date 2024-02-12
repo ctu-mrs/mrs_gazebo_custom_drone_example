@@ -5,6 +5,7 @@
 
 {# visual_cylinder_macro {--> #}
 {%- macro visual_cylinder_macro(name, height, radius, color, x, y, z, roll, pitch, yaw) -%}
+  {# a generic macro to add a colored cylinder visual block. Must be placed inside a link block #}
   <visual name="{{ name }}_visual">
     <pose>{{ x }} {{ y }} {{ z }} {{ roll }} {{ pitch }} {{ yaw }}</pose>
     <geometry>
@@ -25,34 +26,29 @@
 
 {# visual_cylinder_with_collision_macro {--> #}
 {%- macro visual_cylinder_with_collision_macro(name, height, radius, color, x, y, z, roll, pitch, yaw) -%}
-  <visual name="{{ name }}_visual">
-    <pose>{{ x }} {{ y }} {{ z }} {{ roll }} {{ pitch }} {{ yaw }}</pose>
-    <geometry>
-      <cylinder>
-        <length>{{ height }}</length>
-        <radius>{{ radius }}</radius>
-      </cylinder>
-    </geometry>
-    <material>
-      <script>
-        <name>Gazebo/{{ color }}</name>
-        <uri>file://media/materials/scripts/gazebo.material</uri>
-      </script>
-    </material>
-  </visual>
+  {# a generic macro to add a colored cylinder with a collision hitbox. Must be placed inside a link block #}
+  {{ visual_cylinder_macro(name, height, radius, color, x, y, z, roll, pitch, yaw) }}
   {{ mrs_generic.collision_cylinder_macro(name, height, radius, x, y, z, roll, pitch, yaw) }}
 {%- endmacro -%}
 {# <!--}--> #}
 
 {# custom_monochrome_camera_macro {--> #}
 {%- macro custom_monochrome_camera_macro(camera_name, parent_link, x, y, z, roll, pitch, yaw, spawner_args) -%}
+  {# an optional sensor that can be enabled and reconfigured by the MRS drone spawner #}
 
-  {%- set spawner_keyword = 'enable-custom-monochrome-camera' -%}
-  {%- set spawner_description = 'Add a custom monochrome camera to the drone' -%}
-  {%- set spawner_default_args = {'update_rate': 45, 'noise': 0.004} -%}
+  {# spawner API hook {--> #}
+  {# this part allows dynamic configuration of this component by the mrs_drone_spawner #}
+  {%- set spawner_keyword = 'enable-custom-monochrome-camera' -%} {# access this macro from the drone spawner #}
+  {%- set spawner_description = 'Add a custom monochrome camera to the drone' -%} {# displayed when --help is called in the drone spawner #}
+  {%- set spawner_default_args = {'update_rate': 45, 'noise': 0.004} -%} {# internal params that can be overriden in spawn-time #}
+  {# <!--} spawner API hook #}
 
+  {# only include if the keyword was added to the spawn command #}
   {%- if spawner_keyword in spawner_args.keys() -%}
+
+    {# setup default args, override values with user input if possible #}
     {{ mrs_generic.handle_spawner_args(spawner_keyword, spawner_default_args, spawner_args) }}
+    {# we now have data in spawner_args[spawner_keyword]['update_rate'] and spawner_args[spawner_keyword]['noise'] #}
 
     {%- set min_distance = 0.1 -%}
     {%- set max_distance = 50.0 -%}
@@ -60,7 +56,7 @@
     {%- set image_height = 480 -%}
     {%- set horizontal_fov = 1.32 -%}
 
-    <!-- custom RGB camera {-->
+    <!-- custom monochrome camera {-->
     <link name="{{ camera_name }}_link">
       <pose>{{ x }} {{ y }} {{ z }} {{ roll }} {{ pitch }} {{ yaw }}</pose>
       {{ mrs_generic.zero_inertial_macro() }}
@@ -71,7 +67,7 @@
           <image>
             <width>{{ image_width }}</width>
             <height>{{ image_height }}</height>
-            <format>L_INT8</format>
+            <format>L_INT8</format> <!-- this makes the data grayscale -->
           </image>
           <clip>
             <near>{{ min_distance }}</near>
@@ -102,7 +98,7 @@
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.03 0.015 0.015</size>
+            <size>0.03 0.022 0.015</size>
           </box>
         </geometry>
         <material>
