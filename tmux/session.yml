@@ -27,6 +27,8 @@ windows:
   - spawn:
       layout: tiled
       panes:
+        # - waitForGazebo; rosservice call /mrs_drone_spawner/spawn "1 --$UAV_TYPE"
+        # - waitForGazebo; rosservice call /mrs_drone_spawner/spawn "1 --$UAV_TYPE --enable-rangefinder"
         - waitForGazebo; rosservice call /mrs_drone_spawner/spawn "1 --$UAV_TYPE --enable-ground-truth --enable-rangefinder --enable-custom-monochrome-camera"
   - hw_api:
       layout: tiled
