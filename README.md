@@ -31,4 +31,5 @@ The simulation is configured to start 3 state estimators:
 - gps_baro
 - gps_garmin
 - passthrough
+
 Baro estimator will work without any additional sensors. Garmin estimator requires the rangefinder for a more precise altitude estimation. Passthrough estimator uses the ground truth data and should provide the highest accuraccy of state estimation. These can be enabled or disabled in `tmux/config/custom_config.yaml`.
