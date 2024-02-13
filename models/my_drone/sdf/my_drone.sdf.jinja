@@ -10,6 +10,8 @@
 
   {# Robot params {--> #}
   {%- set mass = 2.0 -%} {# [kg] #}
+  {%- set body_radius = 0.1 -%} {# [m] #}
+  {%- set body_height = 0.017 -%} {# [m] #}
 
   {%- set prop_mass = 0.01 -%} {# [kg] #}
   {%- set prop_radius  = 0.09 -%} {# [m] #}
@@ -18,7 +20,6 @@
   {%- set center_board_radius = 0.05 -%} {# [m] #}
   {%- set center_board_height= 0.002 -%} {# [m] #}
   {%- set center_board_offset_z = 0.01 -%} {# [m] #}
-  {%- set body_height = 0.017 -%} {# [m] #}
   {%- set pixhawk_offset_z = -0.004 -%} {# [m] #}
 
   {%- set arm_length = 0.166 -%} {# [m] #}
@@ -82,7 +83,7 @@
       <!-- Body physics {-->
       {{ mrs_generic.multirotor_physics_macro(
         mass = mass,
-        body_radius = center_board_radius,
+        body_radius = body_radius,
         body_height = body_height,
         rotor_velocity_slowdown_sim = rotor_velocity_slowdown_sim,
         ixx = body_ixx,
@@ -96,7 +97,7 @@
 
       <!-- Body visuals {-->
 
-      <!-- Center board {-->
+      <!-- Center boards {-->
       {{ custom_macros.visual_cylinder_macro(
         name = 'center_board_top',
         height = center_board_height,
@@ -434,7 +435,7 @@
     {{ mrs_generic.gazebo_imu_macro(
       imu_name = 'imu',
       parent_link = root,
-      imu_topic = '/imu',
+      imu_topic = imu_topic,
       gyroscope_noise_density = 0.00018665,
       gyroscope_random_walk = 0.000038785,
       gyroscope_bias_correlation_time = 1000.0,
