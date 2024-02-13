@@ -13,7 +13,7 @@ It covers the following steps:
 - Configuring a custom airframe for PX4
 - Adding the custom drone to the MRS drone spawner
 - Running the simulation with the MRS UAV System
-Adding a custom optional sensor (configurable by the MRS drone spawner) The complete example drone is available in the example_custom_drone repository.
+- Adding a custom optional sensor (configurable by the MRS drone spawner)
 
 ## Running the full example
 Clone this repo and build it in a catkin workspace. Use the start script `tmux/start.sh`.
