@@ -1,7 +1,7 @@
 # Example custom drone
 This package supplements a tutorial on how to create a custom drone model and how to use it with the MRS UAV System and Gazebo simulator.
 
-[](.fig/custom_drone.jpg)
+![](.fig/custom_drone.jpg)
 
 The tutorial is available here:
 https://ctu-mrs.github.io/docs/simulation/gazebo/gazebo/custom_drone.html
