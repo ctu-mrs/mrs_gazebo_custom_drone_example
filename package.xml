@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
 
-  <name>example_custom_drone</name>
-  <version>0.0.1</version>
+  <name>mrs_gazebo_custom_drone_example</name>
+  <version>1.0.0</version>
   <description>An example drone extending the MRS simulation</description>
 
   <author email="petr.stibinger@fel.cvut.cz">Petr Stibinger</author>
@@ -16,8 +16,7 @@
   <depend>cmake_modules</depend>
   <depend>mrs_uav_gazebo_simulation</depend>
   <depend>python3-jinja2</depend>
-
-  <exec_depend>gazebo_ros</exec_depend>
+  <depend>gazebo_ros</depend>
 
   <export>
     <!-- gazebo_ros_paths_plugin automatically adds these to

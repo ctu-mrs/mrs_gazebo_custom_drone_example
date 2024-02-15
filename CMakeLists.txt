@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(example_custom_drone)
+project(mrs_gazebo_custom_drone_example)
 
 set(CATKIN_DEPENDENCIES
   cmake_modules
